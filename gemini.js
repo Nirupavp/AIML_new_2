@@ -130,12 +130,14 @@ window.GeminiClient = (function () {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-    // If using Google Gemini and server has key (or no custom key set), route to backend
-    if (providerId === "gemini" && (serverHasKey || !key)) {
+    // If using Google Gemini, route to backend with optional custom key
+    if (providerId === "gemini") {
       try {
+        const headers = { "Content-Type": "application/json" };
+        if (key) headers["x-gemini-key"] = key;
         const res = await fetch("/api/gemini/chat", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers,
           signal: controller.signal,
           body: JSON.stringify({ parts, json, useSearch }),
         });
@@ -228,6 +230,28 @@ Summarize this history for "${sessions[0].exerciseName}" in 4-6 sentences. Descr
 ${rows}`);
   }
 
+  async function summarizeYogaSession(yogaSession) {
+    const deviationSummary = yogaSession.deviatedJoints && yogaSession.deviatedJoints.length > 0
+      ? yogaSession.deviatedJoints.map(d => `${d.joint}: avg deviation ${d.avgDiff}° (${d.seconds}s)`).join(', ')
+      : 'None (stable alignment maintained)';
+
+    const prompt = `You are a certified clinical yoga instructor and biomechanics specialist.
+Analyze this yoga pose hold session:
+- Pose / Asana: "${yogaSession.poseName}"
+- Target hold time: ${yogaSession.targetSeconds}s, Actual time held: ${yogaSession.completedSeconds}s (${yogaSession.completionPct}%)
+- Body Alignment Index (BAI): ${yogaSession.avgBai}%
+- Overall Pose Match: ${yogaSession.poseMatchPct}%
+- Recorded Joint Deviations: ${deviationSummary}
+- Key tracked joints: ${yogaSession.jointSummary || 'Knees, Hips, Shoulders, Spine'}
+
+Provide a 3-paragraph biomechanical and yogic assessment:
+1. Alignment & Hold Endurance: Evaluate stability, core engagement, and balance maintenance during the timed hold.
+2. Form & Joint Deviation Corrections: Address the specific joint deviations noted above with actionable anatomical cues (e.g. pelvis leveling, knee tracking, shoulder retraction).
+3. Breathwork & Safety: Suggest a specific pranayama rhythm (e.g. Ujjayi or balanced diaphragmatic breath) to optimize this pose and prevent compensatory strain.`;
+
+    return generateText(prompt);
+  }
+
   async function researchExerciseTechnique(exerciseName) {
     const prompt = `Using Google Search and sports science sources, describe safe, up-to-date technique for "${exerciseName}" with a resistance theraband. Include step-by-step instructions, 2-4 common mistakes, the main moving joint and an approximate angle range. Be factual, authoritative, and safety-conscious.`;
     const res = await generateText(prompt, { timeoutMs: 28000, useSearch: true });
@@ -235,12 +259,15 @@ ${rows}`);
   }
 
   async function fetchExerciseInstructions(exerciseName, category = "Fitness") {
+    const key = getKey();
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 30000);
     try {
+      const headers = { "Content-Type": "application/json" };
+      if (key) headers["x-gemini-key"] = key;
       const res = await fetch("/api/gemini/exercise-instructions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         signal: controller.signal,
         body: JSON.stringify({ exerciseName, category }),
       });
@@ -331,7 +358,7 @@ Guidelines:
 
   return {
     getKey, setKey, hasKey, getProviderId, getProvider, setProvider, getSettings,
-    generateText, generateJSON, summarizeSession, summarizeProgress,
+    generateText, generateJSON, summarizeSession, summarizeProgress, summarizeYogaSession,
     extractPrescriptionExercises, researchExerciseTechnique, fetchExerciseInstructions,
     structureTherabandExercise, estimateExerciseTargets, THERABAND_RULE_TYPES,
   };

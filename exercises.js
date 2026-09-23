@@ -342,6 +342,125 @@ registerExercise({
 });
 
 /* ═══════════════════════════════════════════════════════════
+ *  YOGA ASANA LIBRARY ENTRIES
+ * ═══════════════════════════════════════════════════════════ */
+registerExercise({
+  id: 'yoga-preset-warrior',
+  name: 'Warrior II (Virabhadrasana II)',
+  category: 'Flexibility',
+  emoji: '⚔️',
+  isYoga: true,
+  yogaPreset: 'warrior',
+  poseName: 'Warrior II (Virabhadrasana II)',
+  description: 'Standing asana cultivating hip opening, quad endurance, and bilateral shoulder stability.',
+  joints: ['knee', 'hip', 'shoulder', 'elbow'],
+  timerSeconds: 30,
+  romTolerance: 15,
+  rom: {
+    'Left Knee': { top: 90, bottom: 90, label: 'L Knee 90°' },
+    'Right Knee': { top: 175, bottom: 175, label: 'R Knee Extended' },
+    'Shoulders': { top: 180, bottom: 180, label: 'Level T-Spine' },
+  },
+  instructions: [
+    'Step feet wide (~3-4 ft apart); turn front foot out 90° and back foot slightly in.',
+    'Bend front knee to 90° directly above the ankle; press through back outer heel.',
+    'Extend arms parallel to the floor, gazing over the front fingertips.',
+  ],
+});
+
+registerExercise({
+  id: 'yoga-preset-tree',
+  name: 'Tree Pose (Vrksasana)',
+  category: 'Balance',
+  emoji: '🌳',
+  isYoga: true,
+  yogaPreset: 'tree',
+  poseName: 'Tree Pose (Vrksasana)',
+  description: 'Unilateral balance hold strengthening stabilizer muscles in ankles, calves, and pelvis.',
+  joints: ['knee', 'hip', 'shoulder'],
+  timerSeconds: 30,
+  romTolerance: 15,
+  rom: {
+    'Standing Knee': { top: 175, bottom: 175, label: 'Extended Baseline' },
+    'Lifted Knee': { top: 45, bottom: 45, label: 'Abducted 45°' },
+    'Spine': { top: 180, bottom: 180, label: 'Upright Axial Axis' },
+  },
+  instructions: [
+    'Ground through standing leg; place opposite sole onto inner thigh or calf.',
+    'Bring palms together at heart center or extend arms overhead.',
+    'Fix your gaze on a steady focal point and breathe diaphragmatically.',
+  ],
+});
+
+registerExercise({
+  id: 'yoga-preset-cobra',
+  name: 'Cobra Pose (Bhujangasana)',
+  category: 'Flexibility',
+  emoji: '🐍',
+  isYoga: true,
+  yogaPreset: 'cobra',
+  poseName: 'Cobra Pose (Bhujangasana)',
+  description: 'Prone backbend improving spinal extension, chest opening, and scapular retraction.',
+  joints: ['elbow', 'shoulder', 'spine'],
+  timerSeconds: 30,
+  romTolerance: 15,
+  rom: {
+    'Elbow': { top: 120, bottom: 120, label: 'Micro-flexed Support' },
+    'Thoracic Spine': { top: 140, bottom: 140, label: 'Spinal Extension' },
+  },
+  instructions: [
+    'Lie prone on the mat with tops of the feet pressed down.',
+    'Place hands under shoulders, hugging elbows close to the ribs.',
+    'Inhale and gently lift the sternum off the floor, engaging upper back muscles.',
+  ],
+});
+
+registerExercise({
+  id: 'yoga-preset-triangle',
+  name: 'Triangle Pose (Trikonasana)',
+  category: 'Flexibility',
+  emoji: '📐',
+  isYoga: true,
+  yogaPreset: 'triangle',
+  poseName: 'Triangle Pose (Trikonasana)',
+  description: 'Standing lateral flexion pose stretching hamstrings, groin, and intercostal ribs.',
+  joints: ['knee', 'hip', 'shoulder', 'spine'],
+  timerSeconds: 30,
+  romTolerance: 15,
+  rom: {
+    'Front Knee': { top: 175, bottom: 175, label: 'Straight Extended' },
+    'Torso Angle': { top: 90, bottom: 90, label: 'Lateral Flexion' },
+  },
+  instructions: [
+    'Stand with feet wide; hinge sideways from the front hip crease.',
+    'Reach front hand down toward shin or floor; extend top arm straight upward.',
+    'Rotate chest open toward the ceiling, keeping both legs straight.',
+  ],
+});
+
+registerExercise({
+  id: 'yoga-preset-custom',
+  name: 'Custom Yoga Pose (Photo Reference)',
+  category: 'Flexibility',
+  emoji: '📸',
+  isYoga: true,
+  yogaPreset: 'custom',
+  poseName: 'Custom Yoga Asana',
+  description: 'Upload any yoga posture photo, customize your hold timer, and track deviations in real-time.',
+  joints: ['knee', 'hip', 'shoulder', 'elbow', 'spine'],
+  timerSeconds: 30,
+  romTolerance: 15,
+  rom: {
+    'Custom Angle ROM': { top: 180, bottom: 90, label: 'Auto-scanned by PoseEngine' },
+  },
+  instructions: [
+    'Upload any reference photo of your desired yoga pose.',
+    'PoseEngine automatically calculates target angles for every major joint.',
+    'Hold the pose in front of your camera while the on-screen HUD timer tracks your hold.',
+  ],
+});
+
+/* ═══════════════════════════════════════════════════════════
  *  Load persisted (admin-uploaded) exercises from localStorage
  * ═══════════════════════════════════════════════════════════ */
 (function loadPersisted() {

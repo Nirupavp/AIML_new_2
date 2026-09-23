@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MotionIQ</title>
-  <meta name="description" content="AI exercise tracker and physiotherapy coach with real-time pose estimation, repetition tracking, and form feedback." />
-  <meta property="og:title" content="MotionIQ" />
-  <meta property="og:description" content="AI exercise tracker and physiotherapy coach with real-time pose estimation, repetition tracking, and form feedback." />
+  <title>Kinetix - AI Movement &amp; Form Coach</title>
+  <meta name="description" content="Smart AI movement coach and physiotherapy exercise tracker with real-time pose estimation, repetition tracking, and form feedback." />
+  <meta property="og:title" content="Kinetix - AI Movement &amp; Form Coach" />
+  <meta property="og:description" content="Smart AI movement coach and physiotherapy exercise tracker with real-time pose estimation, repetition tracking, and form feedback." />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="stylesheet" href="/styles.css" />
@@ -14,6 +14,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+  <script type="module" src="/pdf-bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -21,8 +23,8 @@
 <div id="login-overlay" class="login-overlay">
   <div class="login-card">
     <div class="login-brand">
-      <span class="brand-icon">⬡</span>
-      <span class="brand-text">Motion<strong>IQ</strong></span>
+      <span class="brand-icon">⚡</span>
+      <span class="brand-text">Kinet<strong>ix</strong></span>
     </div>
     <p class="login-sub">Sign in to save your program and track your progress.</p>
     <p class="login-demo-note">⚠ Demo build: sign-in runs entirely in your browser. There is no real SMS/email delivery — the verification code will simply be shown on screen. Do not use a real password anywhere here.</p>
@@ -51,13 +53,12 @@
   <!-- ── NAV ── -->
   <nav class="navbar">
     <div class="nav-brand">
-      <span class="brand-icon">⬡</span>
-      <span class="brand-text">Motion<strong>IQ</strong></span>
+      <span class="brand-icon">⚡</span>
+      <span class="brand-text">Kinet<strong>ix</strong></span>
     </div>
     <div class="nav-links">
       <button class="nav-btn active" data-view="home">Library</button>
       <button class="nav-btn" data-view="upload">Upload &amp; Track</button>
-      <button class="nav-btn" data-view="theraband">Theraband Coach</button>
       <button class="nav-btn" data-view="admin">Admin</button>
       <button class="nav-btn" data-view="reports">Dashboard</button>
     </div>
@@ -71,7 +72,26 @@
   <section id="view-home" class="view active">
     <div class="hero-strip">
       <h1>Your Exercise Library</h1>
-      <p>Select an exercise, follow the guide, and let AI count your perfect reps.</p>
+      <p>Select an exercise or yoga asana, follow the guide, and let AI track your form and count reps.</p>
+    </div>
+
+    <!-- ── YOGA STUDIO HERO BANNER IN LIBRARY ── -->
+    <div class="yoga-library-banner" id="yoga-library-banner">
+      <div class="yoga-banner-content">
+        <div class="yoga-banner-header">
+          <span class="yoga-banner-badge">🧘 YOGA ASANA &amp; ALIGNMENT STUDIO</span>
+          <span class="yoga-banner-tag">Real-Time Joint Tracking &amp; BAI</span>
+        </div>
+        <h2>Hold Any Yoga Pose with On-Screen Biomechanics</h2>
+        <p>Select a classic asana or upload your own reference photo. Set your custom hold timer, and Kinetix measures your live Range of Motion (ROM), Body Alignment Index (BAI), and joint angular deviations with clinical AI summaries.</p>
+        <div class="yoga-banner-actions">
+          <button type="button" class="btn-primary btn-yoga-preset-card" data-preset="warrior">⚔️ Warrior II (Hold)</button>
+          <button type="button" class="btn-secondary btn-yoga-preset-card" data-preset="tree">🌳 Tree Pose (Hold)</button>
+          <button type="button" class="btn-secondary btn-yoga-preset-card" data-preset="cobra">🐍 Cobra Pose (Hold)</button>
+          <button type="button" class="btn-secondary btn-yoga-preset-card" data-preset="triangle">📐 Triangle Pose (Hold)</button>
+          <button type="button" class="btn-secondary btn-yoga-custom-open">📸 Custom Pose / Upload Photo</button>
+        </div>
+      </div>
     </div>
 
     <!-- ── EXERCISE SEARCH BAR ── -->
@@ -176,7 +196,7 @@
             <input type="text" id="upload-youtube-url" placeholder="https://www.youtube.com/watch?v=… or https://youtu.be/…" />
             <div id="youtube-embed-preview" class="youtube-preview-container" style="display:none;aspect-ratio:16/9;max-height:240px;"></div>
           </div>
-          <p class="hint" style="margin-bottom:12px;">✨ <strong>Only YouTube link available?</strong> Enter the URL and exercise name above. MotionIQ will load the YouTube video for side-by-side reference and use AI to automatically configure anatomical Range of Motion and joint targets.</p>
+          <p class="hint" style="margin-bottom:12px;">✨ <strong>Only YouTube link available?</strong> Enter the URL and exercise name above. Kinetix will load the YouTube video for side-by-side reference and use AI to automatically configure anatomical Range of Motion and joint targets.</p>
           <button class="btn-primary" id="btn-setup-youtube-rom">⚡ Configure Exercise with YouTube &amp; AI</button>
         </div>
 
@@ -216,46 +236,106 @@
     </div>
   </section>
 
-  <!-- ── THERABAND COACH VIEW ── -->
-  <section id="view-theraband" class="view">
+  <!-- ── YOGA COACH VIEW ── -->
+  <section id="view-yoga" class="view">
     <div class="hero-strip">
-      <h1>Theraband Coach</h1>
-      <p>Type any theraband exercise name. An AI provider estimates correct technique, then a live camera session tracks your reps, checks your form, and reads your band's resistance level by color.</p>
+      <h1>🧘 Yoga Asana &amp; Alignment Coach</h1>
+      <p>Upload a reference photo of any yoga pose, set your hold duration, and track your live joint angles (ROM), body alignment (BAI), and deviations in real-time with AI coaching feedback.</p>
     </div>
 
-    <div style="max-width:720px;margin:0 auto;padding:0 20px 40px;">
+    <div class="yoga-layout" style="max-width:920px;margin:0 auto;padding:0 20px 40px;">
+      
+      <!-- Back to Library Nav Button -->
+      <div style="margin-bottom:16px;">
+        <button type="button" class="btn-secondary" id="btn-yoga-back-to-library" style="display:inline-flex;align-items:center;gap:6px;font-size:.85rem;padding:6px 14px;font-weight:600;">
+          <span>‹</span> Back to Exercise Library
+        </button>
+      </div>
 
-      <div class="admin-card" style="margin-bottom:18px;">
-        <div id="theraband-key-prompt" style="display:none;margin-bottom:14px;">
-          <p class="hint">Choose a provider and paste its key. Keys are stored only in this browser. Get a <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Gemini key</a>, <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">GitHub token</a>, <a href="https://build.nvidia.com/" target="_blank" rel="noopener">NVIDIA key</a>, or <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener">Hugging Face token</a>.</p>
-          <div class="form-row">
-            <select id="theraband-provider-input" style="max-width:220px;">
-              <option value="gemini">Google Gemini</option>
-              <option value="github">GitHub Models</option>
-              <option value="nvidia">NVIDIA NIM</option>
-              <option value="huggingface">Hugging Face / Meta</option>
-            </select>
-            <input type="password" id="theraband-key-input" placeholder="Paste your provider API key…" style="flex:1;" />
-            <button class="btn-secondary" id="btn-theraband-save-key">Save Key</button>
+      <!-- Preset Quick Selection & Photo Upload -->
+      <div class="admin-card" style="margin-bottom:20px;">
+        <h2>1. Reference Yoga Pose Photo</h2>
+        <p class="hint">Upload a reference photo of your target yoga pose or select one of the calibrated presets below. PoseEngine extracts the target joint angles and alignment index (BAI) from the reference image.</p>
+
+        <div class="yoga-presets-row" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+          <button type="button" class="btn-secondary yoga-preset-btn active" id="btn-preset-warrior" data-preset="warrior">⚔️ Warrior II (Virabhadrasana II)</button>
+          <button type="button" class="btn-secondary yoga-preset-btn" id="btn-preset-tree" data-preset="tree">🌳 Tree Pose (Vrksasana)</button>
+          <button type="button" class="btn-secondary yoga-preset-btn" id="btn-preset-cobra" data-preset="cobra">🐍 Cobra Pose (Bhujangasana)</button>
+          <button type="button" class="btn-secondary yoga-preset-btn" id="btn-preset-triangle" data-preset="triangle">📐 Triangle Pose (Trikonasana)</button>
+        </div>
+
+        <div class="form-group">
+          <label>Pose Name</label>
+          <input type="text" id="yoga-pose-name" value="Warrior II (Virabhadrasana II)" placeholder="e.g. Warrior II, Tree Pose, Downward Dog…" />
+        </div>
+
+        <div class="form-group">
+          <label>Upload Custom Pose Image <span style="font-weight:400;color:var(--muted);">(JPG / PNG / WebP)</span></label>
+          <div class="file-drop" id="yoga-file-drop" style="cursor:pointer;padding:24px;border:2px dashed var(--border);border-radius:12px;text-align:center;background:var(--surface);">
+            <div style="font-size:2rem;margin-bottom:8px;">📷</div>
+            <span>Drop reference yoga photo here or <u>click to browse</u></span>
+            <input type="file" id="yoga-photo-input" accept="image/*" style="display:none;" />
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Exercise Name</label>
-          <input type="text" id="theraband-ex-name" placeholder="e.g. Theraband Face Pull, Standing Row, Bicep Curl…" />
+        <div id="yoga-preview-panel" style="margin-top:16px;display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;">
+          <div style="flex:1;min-width:280px;background:var(--surface2);padding:12px;border-radius:10px;border:1px solid var(--border);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <strong style="font-size:.9rem;">Reference Pose &amp; Skeleton</strong>
+              <span id="yoga-detection-status" class="cat-badge" style="background:#22c55e22;color:#22c55e;">✓ Calibrated</span>
+            </div>
+            <div style="position:relative;width:100%;aspect-ratio:4/3;background:#0f172a;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+              <canvas id="yoga-ref-canvas" width="480" height="360" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;"></canvas>
+            </div>
+          </div>
+
+          <div style="flex:1;min-width:280px;">
+            <h3 style="font-size:.95rem;margin-bottom:10px;">Calibrated Target Joint Angles (ROM)</h3>
+            <div id="yoga-ref-joints-list" class="joint-detect-list" style="margin-bottom:12px;"></div>
+            <div id="yoga-ref-bai-badge" style="background:var(--surface);border:1px solid var(--border);padding:10px 14px;border-radius:8px;font-size:.85rem;color:var(--muted);">
+              Reference BAI Alignment: <strong id="yoga-ref-bai-val" style="color:var(--accent);">94%</strong>
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label>Which arm/side is holding the band?</label>
-          <select id="theraband-side">
-            <option value="right">Right</option>
-            <option value="left">Left</option>
-          </select>
-        </div>
-        <button class="btn-primary" id="btn-theraband-research">🔎 Research This Exercise</button>
-        <div id="theraband-feedback" class="feedback"></div>
+
+        <div id="yoga-upload-feedback" class="feedback"></div>
       </div>
 
-      <div class="admin-card" id="theraband-results" style="display:none;"></div>
+      <!-- Timer & Practice Controls -->
+      <div class="admin-card">
+        <h2>2. Hold Timer &amp; Practice Settings</h2>
+        <p class="hint">Specify how long you will hold the pose in front of your camera. Your live joint angles and deviation will be measured throughout.</p>
+
+        <div class="form-group">
+          <label>Hold Duration (seconds)</label>
+          <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+            <button type="button" class="btn-secondary yoga-time-preset" data-seconds="15">15s</button>
+            <button type="button" class="btn-secondary yoga-time-preset active" data-seconds="30">30s</button>
+            <button type="button" class="btn-secondary yoga-time-preset" data-seconds="45">45s</button>
+            <button type="button" class="btn-secondary yoga-time-preset" data-seconds="60">60s</button>
+            <button type="button" class="btn-secondary yoga-time-preset" data-seconds="90">90s</button>
+          </div>
+          <input type="number" id="yoga-timer-duration" value="30" min="5" max="300" style="max-width:160px;" />
+        </div>
+
+        <div class="form-row" style="gap:16px;">
+          <div class="form-group" style="flex:1;">
+            <label>Number of Repeats (Sets)</label>
+            <input type="number" id="yoga-repeat-count" value="1" min="1" max="10" />
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label>Deviation Tolerance (degrees ±)</label>
+            <input type="number" id="yoga-tolerance" value="15" min="5" max="40" />
+          </div>
+        </div>
+
+        <div style="margin-top:20px;">
+          <button class="btn-primary" id="btn-start-yoga-live" style="width:100%;padding:14px;font-size:1.05rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;">
+            <span style="font-size:1.3rem;">🧘</span> Start Live Yoga Pose Session
+          </button>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -546,25 +626,40 @@
         <!-- Phase pill -->
         <div class="phase-pill" id="phase-pill">LOADING POSE…</div>
 
-        <!-- Yoga hold timer -->
+        <!-- ── ULTRA-VISIBLE ON-SCREEN YOGA HOLD TIMER HUD ── -->
         <div id="yoga-timer-wrap" class="yoga-timer-wrap" style="display:none;">
-          <svg width="120" height="120" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="52" fill="none" stroke="#1e293b" stroke-width="10"/>
-            <circle id="yoga-timer-ring" cx="60" cy="60" r="52" fill="none"
-              stroke="#22c55e" stroke-width="10"
-              stroke-dasharray="327" stroke-dashoffset="0"
-              stroke-linecap="round"
-              transform="rotate(-90 60 60)"/>
-          </svg>
-          <div id="yoga-timer-number" class="yoga-timer-number">30</div>
-          <div id="yoga-timer-label" class="yoga-timer-label">Hold</div>
-          <div id="yoga-repeat-label" class="yoga-repeat-label">Hold 1/1</div>
-        </div>
+          <div class="yoga-timer-hud-bar">
+            <span class="yoga-hud-status-dot"></span>
+            <span id="yoga-hud-pose-title" class="yoga-hud-pose-title">Warrior II Hold</span>
+            <span id="yoga-repeat-label" class="yoga-hud-repeat-tag">Hold 1/1</span>
+          </div>
 
-        <div id="yoga-match-wrap" class="yoga-match-wrap" style="display:none;">
-          <div class="yoga-match-title">Pose Match</div>
-          <div id="yoga-match-percent" class="yoga-match-percent">100%</div>
-          <div id="yoga-match-details" class="yoga-match-details">Good alignment</div>
+          <div class="yoga-timer-center-box">
+            <div class="yoga-ring-wrap">
+              <svg width="130" height="130" viewBox="0 0 130 130" class="yoga-hud-svg">
+                <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="10"/>
+                <circle id="yoga-timer-ring" cx="65" cy="65" r="54" fill="none"
+                  stroke="#00e5a0" stroke-width="10"
+                  stroke-dasharray="339.3" stroke-dashoffset="0"
+                  stroke-linecap="round"
+                  transform="rotate(-90 65 65)"/>
+              </svg>
+              <div class="yoga-timer-digits-box">
+                <span id="yoga-timer-number" class="yoga-timer-number">30</span>
+                <span class="yoga-timer-sec-unit">SEC</span>
+              </div>
+            </div>
+
+            <div class="yoga-timer-metrics-box">
+              <div class="yoga-metric-pill" id="yoga-timer-label">HOLDING ASANA</div>
+              <div class="yoga-match-hud-row">
+                <span class="yoga-match-hud-title">Pose Match:</span>
+                <span id="yoga-match-percent" class="yoga-match-hud-val">100%</span>
+              </div>
+              <div id="yoga-match-details" class="yoga-match-hud-sub">Good alignment</div>
+              <div id="yoga-deviation-warning-badge" class="yoga-deviation-warning" style="display:none;"></div>
+            </div>
+          </div>
         </div>
 
         <!--
@@ -625,12 +720,6 @@
           <div class="bai-label" id="bai-label">–</div>
         </div>
 
-        <!-- Theraband band color/resistance — only shown for theraband exercises -->
-        <div class="info-block" id="block-theraband-band" style="display:none;">
-          <h3>Detected Band</h3>
-          <div class="theraband-band-badge" id="theraband-band-badge">Reading band color…</div>
-        </div>
-
         <!-- Form tips — simplified text in child mode -->
         <div class="info-block child-visible" id="block-tips">
           <h3>Form Feedback</h3>
@@ -674,13 +763,64 @@
     </div>
   </div>
 
+  <!-- ── YOGA SESSION COMPLETE & AI SUMMARY MODAL ── -->
+  <div id="yoga-summary-modal" class="session-summary-overlay" style="display:none;">
+    <div class="session-summary-card" style="max-width:680px;max-height:90vh;overflow-y:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h2 style="margin:0;">🧘 Yoga Hold Completed</h2>
+        <span class="cat-badge" style="background:#22c55e22;color:#22c55e;font-size:.85rem;" id="yoga-modal-pose-badge">Asana</span>
+      </div>
+
+      <!-- Quick Stats Grid -->
+      <div class="yoga-summary-grid" id="yoga-summary-metrics" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));gap:10px;margin-bottom:16px;"></div>
+
+      <!-- Joint Deviations & ROM Table -->
+      <div class="admin-card" style="margin-bottom:16px;background:var(--surface2);border-radius:10px;padding:14px;">
+        <h3 style="font-size:.9rem;margin-bottom:8px;">Biomechanical Joint &amp; Angle Tracking (ROM)</h3>
+        <div id="yoga-summary-joint-table" style="overflow-x:auto;"></div>
+      </div>
+
+      <!-- AI Summary Section -->
+      <div class="admin-card" style="margin-bottom:16px;border-left:4px solid var(--accent);background:var(--surface2);border-radius:10px;padding:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <h3 style="font-size:.95rem;margin:0;color:var(--accent);display:flex;align-items:center;gap:6px;">
+            <span>✨</span> AI Yoga Asana Analysis &amp; Coach Summary
+          </h3>
+          <button class="btn-secondary" id="btn-re-summarize-yoga" style="padding:4px 10px;font-size:.75rem;">Regenerate</button>
+        </div>
+        <div id="yoga-ai-summary-loading" style="display:none;color:var(--muted);font-size:.85rem;padding:10px 0;">
+          <span class="cam-inst-spinner" style="display:inline-block;vertical-align:middle;margin-right:8px;"></span> Analyzing posture alignment and breathwork…
+        </div>
+        <div id="yoga-ai-summary-text" style="font-size:.88rem;line-height:1.6;color:var(--text);white-space:pre-wrap;"></div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button class="btn-secondary" id="btn-yoga-modal-report">📊 View in Reports</button>
+        <button class="btn-primary" id="btn-yoga-modal-close">Done</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ── REPORTS VIEW ── -->
   <section id="view-reports" class="view">
     <div class="hero-strip">
       <h1>Deviation Reports</h1>
-      <p>Select a user to view their yoga hold session history.</p>
+      <p>Review your yoga hold sessions and exercise deviation history, or export a physical therapy summary PDF.</p>
     </div>
-    <div style="max-width:700px;margin:0 auto;padding:20px;">
+    <div style="max-width:760px;margin:0 auto;padding:20px;">
+      
+      <!-- Top Action Bar with PDF Export -->
+      <div class="reports-header-card" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;">
+        <div>
+          <h2 style="font-size:1.05rem;margin:0 0 4px;">Physical Therapy Summary</h2>
+          <p style="margin:0;font-size:.82rem;color:var(--muted);">Generate an official clinical deviation report for your clinician or physiotherapist.</p>
+        </div>
+        <button class="btn-primary" id="btn-export-pdf" style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px;font-weight:600;font-size:.9rem;">
+          <span style="font-size:1.15rem;">📄</span> Export Deviation Report (PDF)
+        </button>
+      </div>
+      <div id="pdf-export-feedback" class="feedback" style="display:none;margin-bottom:14px;"></div>
+
       <div class="form-group">
         <label>Select User</label>
         <select id="report-user-select">
@@ -688,7 +828,7 @@
         </select>
       </div>
       <div class="form-group">
-        <label>Select Exercise</label>
+        <label>Select Exercise or Yoga Asana</label>
         <select id="report-exercise-select" disabled>
           <option value="">— choose an exercise —</option>
         </select>
@@ -698,17 +838,38 @@
     </div>
   </section>
 
+  <!-- ── PDF REPORT PREVIEW & PRINT MODAL ── -->
+  <div id="pdf-report-preview-modal" class="session-summary-overlay" style="display:none;">
+    <div class="session-summary-card" style="max-width:780px;max-height:92vh;overflow-y:auto;padding:24px;border-radius:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:12px;flex-wrap:wrap;gap:10px;">
+        <div>
+          <h2 style="margin:0;font-size:1.25rem;">📄 Physical Therapy Deviation Report</h2>
+          <span style="font-size:0.8rem;color:var(--muted);" id="pdf-modal-patient-subtitle">Clinical Biomechanics Assessment Summary</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn-primary" id="btn-pdf-modal-download" style="padding:8px 14px;font-size:.85rem;">⬇ Download PDF</button>
+          <button type="button" class="btn-secondary" id="btn-pdf-modal-print" style="padding:8px 14px;font-size:.85rem;">🖨️ Print / Save PDF</button>
+          <button type="button" class="btn-secondary" id="btn-pdf-modal-close" style="padding:8px 14px;font-size:.85rem;">✕ Close</button>
+        </div>
+      </div>
+
+      <div id="pdf-modal-alert-notice" style="display:none;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:10px 14px;border-radius:8px;font-size:.82rem;margin-bottom:14px;"></div>
+
+      <div id="pdf-modal-report-document" class="printable-clinical-doc">
+        <!-- Dynamically rendered clinical document -->
+      </div>
+    </div>
+  </div>
+
 </div><!-- #app -->
 
 <script src="/exercises.js"></script>
 <script src="/pose-engine.js"></script>
 <script src="/exercise-builder.js"></script>
-<script src="/theraband-rules.js"></script>
 <script src="/video-analyzer.js"></script>
 <script src="/gemini.js"></script>
 <script src="/auth.js"></script>
 <script src="/app.js"></script>
 <script src="/upload-track.js"></script>
-<script src="/theraband-coach.js"></script>
 </body>
 </html>

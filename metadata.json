@@ -1,6 +1,6 @@
 {
-  "name": "MotionIQ",
-  "description": "AI exercise tracker and physiotherapy coach with real-time pose estimation, repetition tracking, and form feedback.",
+  "name": "Kinetix",
+  "description": "Smart AI movement coach and physiotherapy exercise tracker with real-time pose estimation, repetition tracking, and form feedback.",
   "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
